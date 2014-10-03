@@ -3,4 +3,4 @@ before_script:
   - brew update && brew upgrade xctool
 xcode_project: SwiftCSV.xcodeproj
 xcode_scheme: SwiftCSVTests
-xcode_sdk: iphonesimulator8.0
+xcode_sdk: iphonesimulator
