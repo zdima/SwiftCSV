@@ -15,6 +15,7 @@
 		3D3749E3194D6DF7008F262A /* TSVTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D3749E2194D6DF7008F262A /* TSVTests.swift */; };
 		3D3749E5194D6E12008F262A /* users.tsv in Resources */ = {isa = PBXBuildFile; fileRef = 3D3749E4194D6E12008F262A /* users.tsv */; };
 		5020818F1C73270800560B27 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5020818B1C7326CF00560B27 /* Info.plist */; };
+		502081981C73544F00560B27 /* CSV.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D1E59D2194600D6001CF760 /* CSV.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -296,6 +297,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				502081981C73544F00560B27 /* CSV.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -482,7 +484,7 @@
 				INFOPLIST_FILE = "SwiftCSV-OSX/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.09;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "de.christiantietze.SwiftCSV-OSX";
 				PRODUCT_NAME = SwiftCSV;
@@ -507,7 +509,7 @@
 				INFOPLIST_FILE = "SwiftCSV-OSX/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.09;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "de.christiantietze.SwiftCSV-OSX";
 				PRODUCT_NAME = SwiftCSV;
@@ -553,6 +555,7 @@
 				5020818D1C7326CF00560B27 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

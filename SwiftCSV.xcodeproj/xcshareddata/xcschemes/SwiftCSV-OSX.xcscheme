@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "502081861C7326CF00560B27"
-               BuildableName = "SwiftCSV-OSX.framework"
+               BuildableName = "SwiftCSV.framework"
                BlueprintName = "SwiftCSV-OSX"
                ReferencedContainer = "container:SwiftCSV.xcodeproj">
             </BuildableReference>
@@ -46,7 +46,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "502081861C7326CF00560B27"
-            BuildableName = "SwiftCSV-OSX.framework"
+            BuildableName = "SwiftCSV.framework"
             BlueprintName = "SwiftCSV-OSX"
             ReferencedContainer = "container:SwiftCSV.xcodeproj">
          </BuildableReference>
@@ -64,7 +64,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "502081861C7326CF00560B27"
-            BuildableName = "SwiftCSV-OSX.framework"
+            BuildableName = "SwiftCSV.framework"
             BlueprintName = "SwiftCSV-OSX"
             ReferencedContainer = "container:SwiftCSV.xcodeproj">
          </BuildableReference>
