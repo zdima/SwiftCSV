@@ -29,7 +29,7 @@ public protocol View {
 ///     let firstEntry = csv.rows[0]
 ///     let fullName = firstEntry["firstName"] + " " + firstEntry["lastName"]
 ///
-typealias NamedCSV = CSV<NamedView>
+public typealias NamedCSV = CSV<NamedView>
 
 /// CSV variant that exposes columns and rows as arrays.
 /// Example:
@@ -37,8 +37,9 @@ typealias NamedCSV = CSV<NamedView>
 ///     let csv = EnumeratedCSV(...)
 ///     let allIds = csv.columns.filter { $0.header == "id" }.rows
 ///
-typealias EnumeratedCSV = CSV<EnumeratedView>
+public typealias EnumeratedCSV = CSV<EnumeratedView>
 
+/// For convenience types, see `EnumeratedCSV` and `NamedCSV`.
 open class CSV<DataView : View>  {
     static fileprivate var comma: Character { return "," }
     
