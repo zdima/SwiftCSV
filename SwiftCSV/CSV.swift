@@ -8,85 +8,57 @@
 
 import Foundation
 
-open class CSV {
-    static fileprivate let comma: Character = ","
+public protocol View {
+    associatedtype Row
+    associatedtype Columns
+
+    var rows: [Row] { get }
+    var columns: Columns { get }
+
+    init(header: [String], text: String, delimiter: Character, loadColumns: Bool) throws
+
+    func serialize(header: [String], delimiter: Character) -> String
+}
+
+/// CSV variant for which unique column names are assumed.
+///
+/// Example:
+///
+///     let csv = NamedCSV(...)
+///     let allIds = csv.columns["id"]
+///     let firstEntry = csv.rows[0]
+///     let fullName = firstEntry["firstName"] + " " + firstEntry["lastName"]
+///
+typealias NamedCSV = CSV<NamedView>
+
+/// CSV variant that exposes columns and rows as arrays.
+/// Example:
+///
+///     let csv = EnumeratedCSV(...)
+///     let allIds = csv.columns.filter { $0.header == "id" }.rows
+///
+typealias EnumeratedCSV = CSV<EnumeratedView>
+
+open class CSV<DataView : View>  {
+    static fileprivate var comma: Character { return "," }
     
-    open let header: [String]
+    public let header: [String]
 
-    lazy var _namedView: NamedView = {
+    /// Unparsed contents.
+    public let text: String
 
-        var rows = [[String: String]]()
-        var columns = [String: [String]]()
+    /// Used delimiter to parse `text` and to serialize the data again.
+    public let delimiter: Character
 
-        self.enumerateAsDict { dict in
-            rows.append(dict)
-        }
+    /// Underlying data representation of the CSV contents.
+    public let content: DataView
 
-        if self.loadColumns {
-            for field in self.header {
-                columns[field] = rows.map { $0[field] ?? "" }
-            }
-        }
-
-        return NamedView(rows: rows, columns: columns)
-    }()
-
-    lazy var _enumeratedView: EnumeratedView = {
-
-        var rows = [[String]]()
-        var columns: [EnumeratedView.Column] = []
-        self.enumerateAsArray { rows.append($0) }
-
-        if self.loadColumns {
-            columns = self.header.enumerated().map { (index: Int, header: String) -> EnumeratedView.Column in
-
-                return EnumeratedView.Column(
-                    header: header,
-                    rows: rows.map { $0[index] })
-            }
-        }
-
-        return EnumeratedView(rows: rows, columns: columns)
-    }()
-    
-    var text: String
-    var delimiter: Character
-    
-    let loadColumns: Bool
-
-    /// List of dictionaries that contains the CSV data
-    public var namedRows: [[String : String]] {
-        return _namedView.rows
+    public var rows: [DataView.Row] {
+        return content.rows
     }
 
-    /// Dictionary of header name to list of values in that column
-    /// Will not be loaded if loadColumns in init is false
-    public var namedColumns: [String : [String]] {
-        return _namedView.columns
-    }
-
-    /// Collection of column fields that contain the CSV data
-    public var enumeratedRows: [[String]] {
-        return _enumeratedView.rows
-    }
-
-    /// Collection of columns with metadata.
-    /// Will not be loaded if loadColumns in init is false
-    public var enumeratedColumns: [EnumeratedView.Column] {
-        return _enumeratedView.columns
-    }
-    
-
-
-
-    @available(*, unavailable, renamed: "namedRows")
-    public var rows: [[String : String]] {
-        return namedRows
-    }
-
-    @available(*, unavailable, renamed: "namedColumns")
-    public var columns: [String : [String]] {
-        return namedColumns
+    public var columns: DataView.Columns {
+        return content.columns
     }
 
     
@@ -95,11 +67,12 @@ open class CSV {
     /// - parameter string: Contents of the CSV file
     /// - parameter delimiter: Character to split row and header fields by (default is ',')
     /// - parameter loadColumns: Whether to populate the columns dictionary (default is true)
-    public init(string: String, delimiter: Character = comma, loadColumns: Bool = true) {
+    public init(string: String, delimiter: Character = comma, loadColumns: Bool = true) throws {
         self.text = string
         self.delimiter = delimiter
-        self.loadColumns = loadColumns
-        self.header = CSV.array(text: string, delimiter: delimiter).first ?? []
+        self.header = try Parser.array(text: string, delimiter: delimiter, limitTo: 1).first ?? []
+
+        self.content = try DataView.init(header: header, text: text, delimiter: delimiter, loadColumns: loadColumns)
     }
     
     /// Load a CSV file
@@ -111,7 +84,7 @@ open class CSV {
     public convenience init(name: String, delimiter: Character = comma, encoding: String.Encoding = .utf8, loadColumns: Bool = true) throws {
         let contents = try String(contentsOfFile: name, encoding: encoding)
     
-        self.init(string: contents, delimiter: delimiter, loadColumns: loadColumns)
+        try self.init(string: contents, delimiter: delimiter, loadColumns: loadColumns)
     }
     
     /// Load a CSV file from a URL
@@ -123,11 +96,23 @@ open class CSV {
     public convenience init(url: URL, delimiter: Character = comma, encoding: String.Encoding = .utf8, loadColumns: Bool = true) throws {
         let contents = try String(contentsOf: url, encoding: encoding)
         
-        self.init(string: contents, delimiter: delimiter, loadColumns: loadColumns)
+        try self.init(string: contents, delimiter: delimiter, loadColumns: loadColumns)
     }
     
-    /// Turn the CSV data into NSData using a given encoding
+    /// Turn the CSV contents into Data using a given encoding
     open func dataUsingEncoding(_ encoding: String.Encoding) -> Data? {
-        return description.data(using: encoding)
+        return serialized.data(using: encoding)
+    }
+
+    /// Serialized form of the CSV data; depending on the View used, this may
+    /// perform additional normalizations.
+    open var serialized: String {
+        return self.content.serialize(header: self.header, delimiter: self.delimiter)
+    }
+}
+
+extension CSV: CustomStringConvertible {
+    public var description: String {
+        return self.serialized
     }
 }

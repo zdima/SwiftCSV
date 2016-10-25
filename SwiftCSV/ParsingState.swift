@@ -6,10 +6,17 @@
 //  Copyright © 2016 Naoto Kaneko. All rights reserved.
 //
 
+import Foundation
+
 fileprivate extension Character {
     var isNewline: Bool {
         return self == "\n" || self == "\r\n"
     }
+}
+
+public enum CSVParseError: Error {
+    case generic(message: String)
+    case quotation(message: String)
 }
 
 /// State machine of parsing CSV contents character by character.
@@ -36,7 +43,7 @@ struct ParsingState {
         self.finishField = finishField
     }
 
-    mutating func change(_ char: Character) {
+    mutating func change(_ char: Character) throws {
         if atStart {
             if char == "\"" {
                 atStart = false
@@ -56,7 +63,7 @@ struct ParsingState {
                     appendChar(char)
                     innerQuotes = false
                 } else {
-                    fatalError("Can't have non-quote here: \(char)")
+                    throw CSVParseError.quotation(message: "Can't have non-quote here: \(char)")
                 }
             } else {
                 if char == "\"" {
@@ -91,7 +98,7 @@ struct ParsingState {
                     innerQuotes = false
                     finishRow()
                 } else {
-                    fatalError("Can't have non-quote here: \(char)")
+                    throw CSVParseError.quotation(message: "Can't have non-quote here: \(char)")
                 }
             } else {
                 if char == "\"" {
@@ -101,7 +108,7 @@ struct ParsingState {
                 }
             }
         } else {
-            fatalError("me_irl")
+            throw CSVParseError.generic(message: "me_irl")
         }
     }
 }
